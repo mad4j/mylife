@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life Weeks</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #ffffff;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        
+        .weeks-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px;
+            max-width: 100%;
+            justify-content: center;
+        }
+        
+        .week-square {
+            width: 8px;
+            height: 8px;
+            border-radius: 1px;
+        }
+        
+        .week-past {
+            background-color: #3373dc;
+        }
+        
+        .week-future {
+            background-color: #e5e7eb;
+        }
+        
+        .week-current {
+            background-color: #ef4444;
+            position: relative;
+        }
+        
+        .week-current::after {
+            content: '×';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 6px;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .week-square {
+                width: 6px;
+                height: 6px;
+            }
+            
+            .weeks-container {
+                gap: 1px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="weeks-container" id="weeksContainer">
+    </div>
+
+    <script>
+        // Data di nascita: 9 aprile 1974
+        const birthdate = new Date('1974-04-09');
+        const now = new Date();
+        const lifeExpectancy = 84;
+        const totalWeeks = lifeExpectancy * 52;
+        
+        // Calcola le settimane vissute
+        const timeDiff = now.getTime() - birthdate.getTime();
+        const weeksLived = Math.floor(timeDiff / (1000 * 3600 * 24 * 7));
+        
+        // Genera tutti i quadrati
+        const container = document.getElementById('weeksContainer');
+        
+        for (let week = 0; week < totalWeeks; week++) {
+            const weekSquare = document.createElement('div');
+            weekSquare.className = 'week-square';
+            
+            if (week < weeksLived - 1) {
+                weekSquare.className += ' week-past';
+            } else if (week === weeksLived - 1) {
+                weekSquare.className += ' week-current';
+            } else {
+                weekSquare.className += ' week-future';
+            }
+            
+            container.appendChild(weekSquare);
+        }
+    </script>
+</body>
+</html>
