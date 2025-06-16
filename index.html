@@ -31,12 +31,32 @@
             border-radius: 1px;
         }
         
-        .week-past {
-            background-color: #3373dc;
+        /* Prima fascia: 0-28 anni - Gioventù */
+        .week-youth {
+            background-color: #22c55e;
         }
         
-        .week-future {
-            background-color: #e5e7eb;
+        /* Seconda fascia: 28-56 anni - Maturità */
+        .week-maturity {
+            background-color: #f59e0b;
+        }
+        
+        /* Terza fascia: 56-84 anni - Esperienza */
+        .week-experience {
+            background-color: #8b5cf6;
+        }
+        
+        /* Settimane future - più chiare */
+        .week-future.week-youth {
+            background-color: #bbf7d0;
+        }
+        
+        .week-future.week-maturity {
+            background-color: #fde68a;
+        }
+        
+        .week-future.week-experience {
+            background-color: #ddd6fe;
         }
         
         .week-current {
@@ -76,11 +96,16 @@
         const birthdate = new Date('1974-04-09');
         const now = new Date();
         const lifeExpectancy = 84;
-        const totalWeeks = lifeExpectancy * 52;
+        const totalWeeks = lifeExpectancy * 52; // 4368 settimane totali
         
         // Calcola le settimane vissute
         const timeDiff = now.getTime() - birthdate.getTime();
         const weeksLived = Math.floor(timeDiff / (1000 * 3600 * 24 * 7));
+        
+        // Definisci le fasce di età (in settimane)
+        const youthEnd = 28 * 52;      // 0-28 anni = 1456 settimane
+        const maturityEnd = 56 * 52;   // 28-56 anni = 1456 settimane 
+        const experienceEnd = 84 * 52; // 56-84 anni = 1456 settimane
         
         // Genera tutti i quadrati
         const container = document.getElementById('weeksContainer');
@@ -89,12 +114,26 @@
             const weekSquare = document.createElement('div');
             weekSquare.className = 'week-square';
             
+            // Determina la fascia di età
+            let agePhase = '';
+            if (week < youthEnd) {
+                agePhase = 'week-youth';
+            } else if (week < maturityEnd) {
+                agePhase = 'week-maturity';
+            } else {
+                agePhase = 'week-experience';
+            }
+            
+            // Determina se è passata, attuale o futura
             if (week < weeksLived - 1) {
-                weekSquare.className += ' week-past';
+                // Settimana passata - colore pieno
+                weekSquare.className += ' ' + agePhase;
             } else if (week === weeksLived - 1) {
+                // Settimana attuale - rosso con X
                 weekSquare.className += ' week-current';
             } else {
-                weekSquare.className += ' week-future';
+                // Settimana futura - colore chiaro
+                weekSquare.className += ' week-future ' + agePhase;
             }
             
             container.appendChild(weekSquare);
