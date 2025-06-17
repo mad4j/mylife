@@ -15,20 +15,25 @@
             background-color: #ffffff;
             padding: 20px;
             font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
         }
         
         .weeks-container {
-            display: flex;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(52, 1fr);
+            grid-template-rows: repeat(84, 1fr);
             gap: 2px;
-            max-width: 100%;
-            justify-content: center;
+            max-width: 600px;
+            width: 100%;
         }
         
         .week-square {
             width: 8px;
             height: 8px;
             border-radius: 1px;
+            aspect-ratio: 1;
         }
         
         /* Prima fascia: 0-28 anni - Gioventù */
@@ -62,6 +67,7 @@
         .week-current {
             background-color: #ef4444;
             position: relative;
+            z-index: 1;
         }
         
         .week-current::after {
@@ -75,15 +81,42 @@
             font-weight: bold;
         }
         
+        /* Responsive design */
         @media (max-width: 768px) {
+            .weeks-container {
+                max-width: 400px;
+                gap: 1px;
+            }
+            
             .week-square {
                 width: 6px;
                 height: 6px;
             }
             
+            .week-current::after {
+                font-size: 4px;
+            }
+        }
+        
+        @media (max-width: 480px) {
             .weeks-container {
+                max-width: 300px;
                 gap: 1px;
             }
+            
+            .week-square {
+                width: 4px;
+                height: 4px;
+            }
+            
+            .week-current::after {
+                font-size: 3px;
+            }
+        }
+        
+        /* Layout verticale: ogni riga rappresenta un anno (52 settimane) */
+        .year-row {
+            display: contents;
         }
     </style>
 </head>
@@ -96,48 +129,66 @@
         const birthdate = new Date('1974-04-09');
         const now = new Date();
         const lifeExpectancy = 84;
-        const totalWeeks = lifeExpectancy * 52; // 4368 settimane totali
+        const weeksPerYear = 52;
+        const totalWeeks = lifeExpectancy * weeksPerYear; // 4368 settimane totali
         
         // Calcola le settimane vissute
         const timeDiff = now.getTime() - birthdate.getTime();
         const weeksLived = Math.floor(timeDiff / (1000 * 3600 * 24 * 7));
         
         // Definisci le fasce di età (in settimane)
-        const youthEnd = 28 * 52;      // 0-28 anni = 1456 settimane
-        const maturityEnd = 56 * 52;   // 28-56 anni = 1456 settimane 
-        const experienceEnd = 84 * 52; // 56-84 anni = 1456 settimane
+        const youthEnd = 28 * weeksPerYear;      // 0-28 anni = 1456 settimane
+        const maturityEnd = 56 * weeksPerYear;   // 28-56 anni = 1456 settimane 
+        const experienceEnd = 84 * weeksPerYear; // 56-84 anni = 1456 settimane
         
-        // Genera tutti i quadrati
+        // Genera tutti i quadrati in layout verticale
         const container = document.getElementById('weeksContainer');
         
-        for (let week = 0; week < totalWeeks; week++) {
-            const weekSquare = document.createElement('div');
-            weekSquare.className = 'week-square';
-            
-            // Determina la fascia di età
-            let agePhase = '';
-            if (week < youthEnd) {
-                agePhase = 'week-youth';
-            } else if (week < maturityEnd) {
-                agePhase = 'week-maturity';
-            } else {
-                agePhase = 'week-experience';
+        // Crea la griglia anno per anno (ogni riga = 52 settimane = 1 anno)
+        for (let year = 0; year < lifeExpectancy; year++) {
+            for (let weekInYear = 0; weekInYear < weeksPerYear; weekInYear++) {
+                const week = year * weeksPerYear + weekInYear;
+                const weekSquare = document.createElement('div');
+                weekSquare.className = 'week-square';
+                
+                // Aggiungi attributi per debugging/informazioni
+                weekSquare.setAttribute('data-year', year);
+                weekSquare.setAttribute('data-week', weekInYear);
+                weekSquare.setAttribute('data-total-week', week);
+                
+                // Determina la fascia di età
+                let agePhase = '';
+                if (week < youthEnd) {
+                    agePhase = 'week-youth';
+                } else if (week < maturityEnd) {
+                    agePhase = 'week-maturity';
+                } else {
+                    agePhase = 'week-experience';
+                }
+                
+                // Determina se è passata, attuale o futura
+                if (week < weeksLived - 1) {
+                    // Settimana passata - colore pieno
+                    weekSquare.className += ' ' + agePhase;
+                } else if (week === weeksLived - 1) {
+                    // Settimana attuale - rosso con X
+                    weekSquare.className += ' week-current';
+                } else {
+                    // Settimana futura - colore chiaro
+                    weekSquare.className += ' week-future ' + agePhase;
+                }
+                
+                // Aggiungi tooltip con informazioni
+                const ageAtWeek = Math.floor(week / weeksPerYear);
+                const weekInYearForTooltip = week % weeksPerYear + 1;
+                weekSquare.title = `Anno ${ageAtWeek}, Settimana ${weekInYearForTooltip}`;
+                
+                container.appendChild(weekSquare);
             }
-            
-            // Determina se è passata, attuale o futura
-            if (week < weeksLived - 1) {
-                // Settimana passata - colore pieno
-                weekSquare.className += ' ' + agePhase;
-            } else if (week === weeksLived - 1) {
-                // Settimana attuale - rosso con X
-                weekSquare.className += ' week-current';
-            } else {
-                // Settimana futura - colore chiaro
-                weekSquare.className += ' week-future ' + agePhase;
-            }
-            
-            container.appendChild(weekSquare);
         }
+        
+        console.log(`Settimane vissute: ${weeksLived} su ${totalWeeks} totali`);
+        console.log(`Età attuale: ${Math.floor(weeksLived / weeksPerYear)} anni`);
     </script>
 </body>
 </html>
