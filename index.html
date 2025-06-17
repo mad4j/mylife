@@ -81,6 +81,24 @@
             font-weight: bold;
         }
         
+        /* Stile per le date evidenziate */
+        .week-highlighted {
+            background-color: #054caf !important;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .week-highlighted::after {
+            content: '+';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 6px;
+            font-weight: bold;
+        }
+        
         /* Responsive design */
         @media (max-width: 768px) {
             .weeks-container {
@@ -94,6 +112,10 @@
             }
             
             .week-current::after {
+                font-size: 4px;
+            }
+            
+            .week-highlighted::after {
                 font-size: 4px;
             }
         }
@@ -110,6 +132,10 @@
             }
             
             .week-current::after {
+                font-size: 3px;
+            }
+            
+            .week-highlighted::after {
                 font-size: 3px;
             }
         }
@@ -132,9 +158,22 @@
         const weeksPerYear = 52;
         const totalWeeks = lifeExpectancy * weeksPerYear; // 4368 settimane totali
         
+        // Vettore delle date da evidenziare
+        const specialDates = [
+            new Date('2000-12-30'),
+            new Date('2010-10-16'),
+            new Date('2016-10-14')
+        ];
+        
         // Calcola le settimane vissute
         const timeDiff = now.getTime() - birthdate.getTime();
         const weeksLived = Math.floor(timeDiff / (1000 * 3600 * 24 * 7));
+        
+        // Calcola le settimane per le date speciali
+        const specialWeeks = specialDates.map(date => {
+            const specialTimeDiff = date.getTime() - birthdate.getTime();
+            return Math.floor(specialTimeDiff / (1000 * 3600 * 24 * 7));
+        });
         
         // Definisci le fasce di età (in settimane)
         const youthEnd = 28 * weeksPerYear;      // 0-28 anni = 1456 settimane
@@ -155,6 +194,9 @@
                 weekSquare.setAttribute('data-year', year);
                 weekSquare.setAttribute('data-week', weekInYear);
                 weekSquare.setAttribute('data-total-week', week);
+                
+                // Controlla se questa settimana corrisponde a una data speciale
+                const isSpecialWeek = specialWeeks.includes(week);
                 
                 // Determina la fascia di età
                 let agePhase = '';
@@ -178,10 +220,18 @@
                     weekSquare.className += ' week-future ' + agePhase;
                 }
                 
-                // Aggiungi tooltip con informazioni
-                const ageAtWeek = Math.floor(week / weeksPerYear);
-                const weekInYearForTooltip = week % weeksPerYear + 1;
-                weekSquare.title = `Anno ${ageAtWeek}, Settimana ${weekInYearForTooltip}`;
+                // Evidenzia le date speciali
+                if (isSpecialWeek) {
+                    weekSquare.className += ' week-highlighted';
+                    const specialDateIndex = specialWeeks.indexOf(week);
+                    const specialDate = specialDates[specialDateIndex];
+                    weekSquare.title = `Data speciale: ${specialDate.toLocaleDateString('it-IT')} - Anno ${Math.floor(week / weeksPerYear)}, Settimana ${week % weeksPerYear + 1}`;
+                } else {
+                    // Aggiungi tooltip con informazioni
+                    const ageAtWeek = Math.floor(week / weeksPerYear);
+                    const weekInYearForTooltip = week % weeksPerYear + 1;
+                    weekSquare.title = `Anno ${ageAtWeek}, Settimana ${weekInYearForTooltip}`;
+                }
                 
                 container.appendChild(weekSquare);
             }
@@ -189,6 +239,7 @@
         
         console.log(`Settimane vissute: ${weeksLived} su ${totalWeeks} totali`);
         console.log(`Età attuale: ${Math.floor(weeksLived / weeksPerYear)} anni`);
+        console.log(`Date speciali alle settimane:`, specialWeeks);
     </script>
 </body>
 </html>
