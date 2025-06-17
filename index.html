@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +11,7 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             background-color: #ffffff;
             padding: 20px;
@@ -19,57 +20,57 @@
             justify-content: center;
             min-height: 100vh;
         }
-        
+
         .weeks-container {
             display: grid;
             grid-template-columns: repeat(52, 1fr);
             grid-template-rows: repeat(84, 1fr);
-            gap: 2px;
-            max-width: 600px;
+            gap: 3px;
+            max-width: 900px;
             width: 100%;
         }
-        
+
         .week-square {
-            width: 8px;
-            height: 8px;
-            border-radius: 1px;
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
             aspect-ratio: 1;
         }
-        
+
         /* Prima fascia: 0-28 anni - Gioventù */
         .week-youth {
             background-color: #22c55e;
         }
-        
+
         /* Seconda fascia: 28-56 anni - Maturità */
         .week-maturity {
             background-color: #f59e0b;
         }
-        
+
         /* Terza fascia: 56-84 anni - Esperienza */
         .week-experience {
             background-color: #8b5cf6;
         }
-        
+
         /* Settimane future - più chiare */
         .week-future.week-youth {
             background-color: #bbf7d0;
         }
-        
+
         .week-future.week-maturity {
             background-color: #fde68a;
         }
-        
+
         .week-future.week-experience {
             background-color: #ddd6fe;
         }
-        
+
         .week-current {
             background-color: #ef4444;
             position: relative;
             z-index: 1;
         }
-        
+
         .week-current::after {
             content: '×';
             position: absolute;
@@ -77,17 +78,17 @@
             left: 50%;
             transform: translate(-50%, -50%);
             color: white;
-            font-size: 6px;
+            font-size: 8px;
             font-weight: bold;
         }
-        
+
         /* Stile per le date evidenziate */
         .week-highlighted {
             background-color: #054caf !important;
             position: relative;
             z-index: 2;
         }
-        
+
         .week-highlighted::after {
             content: '+';
             position: absolute;
@@ -95,57 +96,58 @@
             left: 50%;
             transform: translate(-50%, -50%);
             color: white;
-            font-size: 6px;
+            font-size: 8px;
             font-weight: bold;
         }
-        
+
         /* Responsive design */
         @media (max-width: 768px) {
             .weeks-container {
-                max-width: 400px;
+                max-width: 700px;
+                gap: 2px;
+            }
+
+            .week-square {
+                width: 10px;
+                height: 10px;
+            }
+
+            .week-current::after {
+                font-size: 6px;
+            }
+
+            .week-highlighted::after {
+                font-size: 6px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .weeks-container {
+                max-width: 350px;
                 gap: 1px;
             }
-            
+
             .week-square {
                 width: 6px;
                 height: 6px;
             }
-            
+
             .week-current::after {
                 font-size: 4px;
             }
-            
+
             .week-highlighted::after {
                 font-size: 4px;
             }
         }
-        
-        @media (max-width: 480px) {
-            .weeks-container {
-                max-width: 300px;
-                gap: 1px;
-            }
-            
-            .week-square {
-                width: 4px;
-                height: 4px;
-            }
-            
-            .week-current::after {
-                font-size: 3px;
-            }
-            
-            .week-highlighted::after {
-                font-size: 3px;
-            }
-        }
-        
+
         /* Layout verticale: ogni riga rappresenta un anno (52 settimane) */
         .year-row {
             display: contents;
         }
     </style>
 </head>
+
 <body>
     <div class="weeks-container" id="weeksContainer">
     </div>
@@ -157,47 +159,47 @@
         const lifeExpectancy = 84;
         const weeksPerYear = 52;
         const totalWeeks = lifeExpectancy * weeksPerYear; // 4368 settimane totali
-        
+
         // Vettore delle date da evidenziare
         const specialDates = [
             new Date('2000-12-30'),
             new Date('2010-10-16'),
             new Date('2016-10-14')
         ];
-        
+
         // Calcola le settimane vissute
         const timeDiff = now.getTime() - birthdate.getTime();
         const weeksLived = Math.floor(timeDiff / (1000 * 3600 * 24 * 7));
-        
+
         // Calcola le settimane per le date speciali
         const specialWeeks = specialDates.map(date => {
             const specialTimeDiff = date.getTime() - birthdate.getTime();
             return Math.floor(specialTimeDiff / (1000 * 3600 * 24 * 7));
         });
-        
+
         // Definisci le fasce di età (in settimane)
         const youthEnd = 28 * weeksPerYear;      // 0-28 anni = 1456 settimane
         const maturityEnd = 56 * weeksPerYear;   // 28-56 anni = 1456 settimane 
         const experienceEnd = 84 * weeksPerYear; // 56-84 anni = 1456 settimane
-        
+
         // Genera tutti i quadrati in layout verticale
         const container = document.getElementById('weeksContainer');
-        
+
         // Crea la griglia anno per anno (ogni riga = 52 settimane = 1 anno)
         for (let year = 0; year < lifeExpectancy; year++) {
             for (let weekInYear = 0; weekInYear < weeksPerYear; weekInYear++) {
                 const week = year * weeksPerYear + weekInYear;
                 const weekSquare = document.createElement('div');
                 weekSquare.className = 'week-square';
-                
+
                 // Aggiungi attributi per debugging/informazioni
                 weekSquare.setAttribute('data-year', year);
                 weekSquare.setAttribute('data-week', weekInYear);
                 weekSquare.setAttribute('data-total-week', week);
-                
+
                 // Controlla se questa settimana corrisponde a una data speciale
                 const isSpecialWeek = specialWeeks.includes(week);
-                
+
                 // Determina la fascia di età
                 let agePhase = '';
                 if (week < youthEnd) {
@@ -207,7 +209,7 @@
                 } else {
                     agePhase = 'week-experience';
                 }
-                
+
                 // Determina se è passata, attuale o futura
                 if (week < weeksLived - 1) {
                     // Settimana passata - colore pieno
@@ -219,7 +221,7 @@
                     // Settimana futura - colore chiaro
                     weekSquare.className += ' week-future ' + agePhase;
                 }
-                
+
                 // Evidenzia le date speciali
                 if (isSpecialWeek) {
                     weekSquare.className += ' week-highlighted';
@@ -232,14 +234,15 @@
                     const weekInYearForTooltip = week % weeksPerYear + 1;
                     weekSquare.title = `Anno ${ageAtWeek}, Settimana ${weekInYearForTooltip}`;
                 }
-                
+
                 container.appendChild(weekSquare);
             }
         }
-        
+
         console.log(`Settimane vissute: ${weeksLived} su ${totalWeeks} totali`);
         console.log(`Età attuale: ${Math.floor(weeksLived / weeksPerYear)} anni`);
         console.log(`Date speciali alle settimane:`, specialWeeks);
     </script>
 </body>
+
 </html>
