@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="it">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Life Weeks</title>
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiTGlmZSBXZWVrcyIsInNob3J0X25hbWUiOiJMaWZlV2Vla3MiLCJzdGFydF91cmwiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiI2ZmZmZmZiIsInRoZW1lX2NvbG9yIjoiIzAwMDAwMCIsImljb25zIjpbeyJzcmMiOiJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITjJaeUI0Yld4dWN6MGlhSFIwY0RvdkwzZDNkeTUzTXk1dmNtY3ZNakF3TUM5emRtY2lJSGRwWkhSb1BTSXlOQ0VpSUdobGFXZG9kRDBpTWpRaUlpQjJhV1YzUW05NFBTSXdJREFnTWpRZ01qUWlQanh5WldOMElIZHBaSFJvUFNJeU5DSWdhR1ZwWjJoMFBTSXlOQ0lpSUdacGJHdzlJaU16Wm1ZaUx6NDhMM0oyWno0PSIsInNpemVzIjoiMjR4MjQiLCJ0eXBlIjoiaW1hZ2Uvc3ZnK3htbCJ9XX0=">
+    <meta name="theme-color" content="#000000">
     <style>
         * {
             margin: 0;
@@ -13,236 +14,184 @@
         }
 
         body {
-            background-color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8f9fa;
+            min-height: 100vh;
             padding: 20px;
-            font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
-            min-height: 100vh;
+            align-items: flex-start;
         }
 
-        .weeks-container {
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+            padding: 40px;
+        }
+
+        .weeks-grid {
             display: grid;
             grid-template-columns: repeat(52, 1fr);
-            grid-template-rows: repeat(84, 1fr);
-            gap: 3px;
-            max-width: 900px;
+            gap: 2px;
             width: 100%;
+            aspect-ratio: 52/84;
         }
 
-        .week-square {
-            width: 12px;
-            height: 12px;
-            border-radius: 2px;
+        .week {
             aspect-ratio: 1;
+            border-radius: 2px;
+            transition: all 0.2s ease;
+            cursor: pointer;
         }
 
-        /* Prima fascia: 0-28 anni - Gioventù */
-        .week-youth {
-            background-color: #22c55e;
+        .week:hover {
+            transform: scale(1.2);
+            z-index: 1;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
 
-        /* Seconda fascia: 28-56 anni - Maturità */
-        .week-maturity {
+        /* Età 0-28: Blu */
+        .age-0-28.passed {
+            background-color: #3b82f6;
+        }
+        .age-0-28.future {
+            background-color: #dbeafe;
+        }
+
+        /* Età 29-56: Verde */
+        .age-29-56.passed {
+            background-color: #10b981;
+        }
+        .age-29-56.future {
+            background-color: #d1fae5;
+        }
+
+        /* Età 57-84: Arancione */
+        .age-57-84.passed {
             background-color: #f59e0b;
         }
-
-        /* Terza fascia: 56-84 anni - Esperienza */
-        .week-experience {
-            background-color: #8b5cf6;
+        .age-57-84.future {
+            background-color: #fef3c7;
         }
 
-        /* Settimane future - più chiare */
-        .week-future.week-youth {
-            background-color: #bbf7d0;
+        .current-week {
+            background-color: #000000 !important;
+            animation: pulse 2s infinite;
         }
 
-        .week-future.week-maturity {
-            background-color: #fde68a;
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
         }
 
-        .week-future.week-experience {
-            background-color: #ddd6fe;
-        }
-
-        .week-current {
-            background-color: #ef4444;
-            position: relative;
-            z-index: 1;
-        }
-
-        .week-current::after {
-            content: '×';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-size: 8px;
-            font-weight: bold;
-        }
-
-        /* Stile per le date evidenziate */
-        .week-highlighted {
-            background-color: #054caf !important;
-            position: relative;
-            z-index: 2;
-        }
-
-        .week-highlighted::after {
-            content: '+';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-size: 8px;
-            font-weight: bold;
-        }
-
-        /* Responsive design */
         @media (max-width: 768px) {
-            .weeks-container {
-                max-width: 700px;
-                gap: 2px;
+            .container {
+                padding: 20px;
             }
-
-            .week-square {
-                width: 10px;
-                height: 10px;
-            }
-
-            .week-current::after {
-                font-size: 6px;
-            }
-
-            .week-highlighted::after {
-                font-size: 6px;
+            
+            .weeks-grid {
+                gap: 1px;
             }
         }
 
         @media (max-width: 480px) {
-            .weeks-container {
-                max-width: 350px;
-                gap: 1px;
+            body {
+                padding: 10px;
             }
-
-            .week-square {
-                width: 6px;
-                height: 6px;
+            
+            .container {
+                padding: 15px;
+                border-radius: 8px;
             }
-
-            .week-current::after {
-                font-size: 4px;
-            }
-
-            .week-highlighted::after {
-                font-size: 4px;
-            }
-        }
-
-        /* Layout verticale: ogni riga rappresenta un anno (52 settimane) */
-        .year-row {
-            display: contents;
         }
     </style>
 </head>
-
 <body>
-    <div class="weeks-container" id="weeksContainer">
+    <div class="container">
+        <div class="weeks-grid" id="weeksGrid"></div>
     </div>
 
     <script>
-        // Data di nascita: 9 aprile 1974
-        const birthdate = new Date('1974-04-09');
-        const now = new Date();
-        const lifeExpectancy = 84;
-        const weeksPerYear = 52;
-        const totalWeeks = lifeExpectancy * weeksPerYear; // 4368 settimane totali
+        // Data di nascita: 09/04/1974
+        const birthDate = new Date(1974, 3, 9); // Mese 0-indicizzato
+        const today = new Date();
+        const maxAge = 84;
+        const weeksInYear = 52;
+        const totalWeeks = maxAge * weeksInYear;
 
-        // Vettore delle date da evidenziare
-        const specialDates = [
-            new Date('2000-12-30'),
-            new Date('2010-10-16'),
-            new Date('2016-10-14')
-        ];
+        // Calcola le settimane trascorse dalla nascita
+        const msPerWeek = 7 * 24 * 60 * 60 * 1000;
+        const weeksPassed = Math.floor((today - birthDate) / msPerWeek);
 
-        // Calcola le settimane vissute
-        const timeDiff = now.getTime() - birthdate.getTime();
-        const weeksLived = Math.floor(timeDiff / (1000 * 3600 * 24 * 7));
+        function getAgeGroup(weekNumber) {
+            const age = Math.floor(weekNumber / weeksInYear);
+            
+            if (age <= 28) return 'age-0-28';
+            if (age <= 56) return 'age-29-56';
+            return 'age-57-84';
+        }
 
-        // Calcola le settimane per le date speciali
-        const specialWeeks = specialDates.map(date => {
-            const specialTimeDiff = date.getTime() - birthdate.getTime();
-            return Math.floor(specialTimeDiff / (1000 * 3600 * 24 * 7));
-        });
-
-        // Definisci le fasce di età (in settimane)
-        const youthEnd = 28 * weeksPerYear;      // 0-28 anni = 1456 settimane
-        const maturityEnd = 56 * weeksPerYear;   // 28-56 anni = 1456 settimane 
-        const experienceEnd = 84 * weeksPerYear; // 56-84 anni = 1456 settimane
-
-        // Genera tutti i quadrati in layout verticale
-        const container = document.getElementById('weeksContainer');
-
-        // Crea la griglia anno per anno (ogni riga = 52 settimane = 1 anno)
-        for (let year = 0; year < lifeExpectancy; year++) {
-            for (let weekInYear = 0; weekInYear < weeksPerYear; weekInYear++) {
-                const week = year * weeksPerYear + weekInYear;
-                const weekSquare = document.createElement('div');
-                weekSquare.className = 'week-square';
-
-                // Aggiungi attributi per debugging/informazioni
-                weekSquare.setAttribute('data-year', year);
-                weekSquare.setAttribute('data-week', weekInYear);
-                weekSquare.setAttribute('data-total-week', week);
-
-                // Controlla se questa settimana corrisponde a una data speciale
-                const isSpecialWeek = specialWeeks.includes(week);
-
-                // Determina la fascia di età
-                let agePhase = '';
-                if (week < youthEnd) {
-                    agePhase = 'week-youth';
-                } else if (week < maturityEnd) {
-                    agePhase = 'week-maturity';
-                } else {
-                    agePhase = 'week-experience';
+        function renderWeeks() {
+            const grid = document.getElementById('weeksGrid');
+            
+            for (let i = 0; i < totalWeeks; i++) {
+                const week = document.createElement('div');
+                week.className = 'week';
+                
+                const ageGroup = getAgeGroup(i);
+                const isPassed = i < weeksPassed;
+                const isCurrent = i === weeksPassed;
+                
+                week.classList.add(ageGroup);
+                week.classList.add(isPassed ? 'passed' : 'future');
+                
+                if (isCurrent) {
+                    week.classList.add('current-week');
                 }
-
-                // Determina se è passata, attuale o futura
-                if (week < weeksLived - 1) {
-                    // Settimana passata - colore pieno
-                    weekSquare.className += ' ' + agePhase;
-                } else if (week === weeksLived - 1) {
-                    // Settimana attuale - rosso con X
-                    weekSquare.className += ' week-current';
-                } else {
-                    // Settimana futura - colore chiaro
-                    weekSquare.className += ' week-future ' + agePhase;
-                }
-
-                // Evidenzia le date speciali
-                if (isSpecialWeek) {
-                    weekSquare.className += ' week-highlighted';
-                    const specialDateIndex = specialWeeks.indexOf(week);
-                    const specialDate = specialDates[specialDateIndex];
-                    weekSquare.title = `Data speciale: ${specialDate.toLocaleDateString('it-IT')} - Anno ${Math.floor(week / weeksPerYear)}, Settimana ${week % weeksPerYear + 1}`;
-                } else {
-                    // Aggiungi tooltip con informazioni
-                    const ageAtWeek = Math.floor(week / weeksPerYear);
-                    const weekInYearForTooltip = week % weeksPerYear + 1;
-                    weekSquare.title = `Anno ${ageAtWeek}, Settimana ${weekInYearForTooltip}`;
-                }
-
-                container.appendChild(weekSquare);
+                
+                grid.appendChild(week);
             }
         }
 
-        console.log(`Settimane vissute: ${weeksLived} su ${totalWeeks} totali`);
-        console.log(`Età attuale: ${Math.floor(weeksLived / weeksPerYear)} anni`);
-        console.log(`Date speciali alle settimane:`, specialWeeks);
+        // Registra Service Worker per PWA
+        if ('serviceWorker' in navigator) {
+            const swCode = `
+                const CACHE_NAME = 'life-weeks-v1';
+                const urlsToCache = ['/'];
+                
+                self.addEventListener('install', event => {
+                    event.waitUntil(
+                        caches.open(CACHE_NAME)
+                            .then(cache => cache.addAll(urlsToCache))
+                    );
+                });
+                
+                self.addEventListener('fetch', event => {
+                    event.respondWith(
+                        caches.match(event.request)
+                            .then(response => response || fetch(event.request))
+                    );
+                });
+            `;
+            
+            const blob = new Blob([swCode], { type: 'application/javascript' });
+            const swUrl = URL.createObjectURL(blob);
+            
+            navigator.serviceWorker.register(swUrl)
+                .then(() => console.log('SW registered'))
+                .catch(err => console.log('SW registration failed'));
+        }
+
+        // Inizializza l'app
+        renderWeeks();
     </script>
 </body>
-
 </html>
